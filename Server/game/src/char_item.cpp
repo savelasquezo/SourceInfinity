@@ -2387,6 +2387,19 @@ bool CHARACTER::UseItemEx(LPITEM item, TItemPos DestCell)
 			item->SetSocket(1, item->GetSocket(1) + 1);
 	}
 
+#ifdef __BATTLE_PASS__
+	if (!v_counts.empty())
+	{
+		for (int i=0; i<missions_bp.size(); ++i)
+		{
+			if (missions_bp[i].type == 1 && item->GetVnum() == missions_bp[i].vnum)
+			{
+				DoMission(i, 1);
+			}
+		}
+	}
+#endif
+
 #ifdef ENABLE_GROWTH_PET_SYSTEM
 
 	if (item->GetVnum() == 55001) {
@@ -4828,6 +4841,40 @@ bool CHARACTER::UseItemEx(LPITEM item, TItemPos DestCell)
 								}
 								break;
 
+
+#ifdef __BATTLE_PASS__
+							case ITEM_BATTLE_PASS: 
+								{
+									if (!v_counts.empty())
+									{
+										ChatPacket(CHAT_TYPE_INFO, "You have already one active!");
+										return false;
+									}
+									
+									FILE 	*fileID;
+									char file_name[256+1];
+
+									snprintf(file_name, sizeof(file_name), "%s/battlepass_players/%s.txt", LocaleService_GetBasePath().c_str(),GetName());
+									fileID = fopen(file_name, "w");
+									
+									if (NULL == fileID)
+										return false;
+
+									for (int i=0; i<missions_bp.size(); ++i)
+									{
+										fprintf(fileID,"MISSION	%d	%d\n", 0, 0);
+									}
+									
+									fclose(fileID);
+
+									Load_BattlePass();
+									ChatPacket(CHAT_TYPE_INFO, "You activate battle pass for this month!");
+									item->SetCount(item->GetCount() - 1);
+								}
+								break;
+#endif
+
+
 							case 80040:
 								{
 									int iWon = 20;
@@ -4837,18 +4884,18 @@ bool CHARACTER::UseItemEx(LPITEM item, TItemPos DestCell)
 								}
 								break;
 								
-							case 50027:
-								{
-									int iCheque = item->GetSocket(0);
-									if (GetCheque() + iCheque > CHEQUE_MAX)
-									{
-										ChatPacket(CHAT_TYPE_INFO, LC_TEXT("ENVANTERINDEKI_WON_MIKTARI_FAZLA"));
-										return false;
-									}
-									ITEM_MANAGER::instance().RemoveItem(item);
-									PointChange(POINT_CHEQUE, iCheque, true);
-								}
-								break;
+							//case 50027:
+							//	{
+							//		int iCheque = item->GetSocket(0);
+							//		if (GetCheque() + iCheque > CHEQUE_MAX)
+							//		{
+							//			ChatPacket(CHAT_TYPE_INFO, LC_TEXT("ENVANTERINDEKI_WON_MIKTARI_FAZLA"));
+							//			return false;
+							//		}
+							//		ITEM_MANAGER::instance().RemoveItem(item);
+							//		PointChange(POINT_CHEQUE, iCheque, true);
+							//	}
+							//	break;
 					
 								//군주의 증표 
 							case 70021:
@@ -7407,7 +7454,21 @@ bool CHARACTER::DestroyItem(TItemPos Cell)
 
 	ChatPacket(CHAT_TYPE_INFO, LC_TEXT("Silinen item :  %s basarili bir sekilde silindi.."), item->GetName());
 
+#ifdef __BATTLE_PASS__
+	if (!v_counts.empty())
+	{
+		for (int i=0; i<missions_bp.size(); ++i)
+		{
+			if (missions_bp[i].type == 4)
+			{
+				DoMission(i, item->GetCount());
+			}
+		}
+	}
+#endif
+
 	return true;
+
 }
 
 bool CHARACTER::DropItem(TItemPos Cell, BYTE bCount)

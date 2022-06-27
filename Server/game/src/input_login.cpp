@@ -768,6 +768,11 @@ void CInputLogin::Entergame(LPDESC d, const char * data)
 
 	_send_bonus_info(ch);
 
+#ifdef __BATTLE_PASS__
+	ch->ExternBattlePass();
+	ch->Load_BattlePass();
+#endif
+
 	if (ch->GetQuestFlag("auto_afk_system.afk") == 1)
 	{
 		ch->SetPolymorph(0);

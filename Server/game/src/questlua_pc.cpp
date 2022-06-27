@@ -988,6 +988,27 @@ namespace quest
 		return 1;
 	}
 
+#ifdef __BATTLE_PASS__
+	int pc_do_battle_pass(lua_State* L)
+	{
+		LPCHARACTER ch = CQuestManager::instance().GetCurrentCharacterPtr();
+		if (!ch)
+			return 0;
+		
+		if (ch->v_counts.empty())
+			return 0;
+		
+		if (!ch->v_counts.empty())
+		{
+			for (int i=0; i<ch->missions_bp.size(); ++i)
+			{
+				if (ch->missions_bp[i].type == (int)lua_tonumber(L, 1)){	ch->DoMission(i, (DWORD)lua_tonumber(L, 2));}
+			}
+		}
+		return 1;
+	}
+#endif
+
 #ifdef ENABLE_OKAY_CARD
 	int pc_get_okay_global_rank(lua_State* L)
 	{
@@ -5362,6 +5383,9 @@ int _unblock_exp(lua_State* L)
 			{ "set_warp_location_local",pc_set_warp_location_local },
 			{ "get_start_location",	pc_get_start_location	},
 			{ "has_master_skill",	pc_has_master_skill	},
+#ifdef __BATTLE_PASS__
+			{ "do_mission",	pc_do_battle_pass	},
+#endif
 #ifdef ENABLE_OKAY_CARD
 			{ "get_okay_global_rank",	pc_get_okay_global_rank	},
 			{ "get_okay_rund_rank",	pc_get_okay_rund_rank	},

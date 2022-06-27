@@ -63,6 +63,10 @@
 #include "buff_on_attributes.h"
 #include "OXEvent.h"
 
+#ifdef __BATTLE_PASS__
+	#include "System_Battlepass.cpp"
+#endif
+
 #ifdef __PET_SYSTEM__
 #include "PetSystem.h"
 #endif

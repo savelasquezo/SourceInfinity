@@ -910,6 +910,15 @@ void CHARACTER::RewardGold(LPCHARACTER pkAttacker)
 
 			for (int i = 0; i < iSplitCount; ++i)
 			{
+#ifdef __BATTLE_PASS__
+				if (!pkAttacker->v_counts.empty())
+				{
+					for (int i=0; i<pkAttacker->missions_bp.size(); ++i)
+					{
+						if (pkAttacker->missions_bp[i].type == 9){	pkAttacker->DoMission(i, iGold / iSplitCount);}
+					}
+				}
+#endif
 				if (isAutoLoot)
 				{
 					pkAttacker->GiveGold(iGold / iSplitCount);
@@ -1061,6 +1070,16 @@ void CHARACTER::Reward(bool bItemDrop)
 			}
 
 			item->StartDestroyEvent();
+
+#ifdef __BATTLE_PASS__
+			if (!pkAttacker->v_counts.empty())
+			{
+				for (int i=0; i<pkAttacker->missions_bp.size(); ++i)
+				{
+					if (pkAttacker->missions_bp[i].type == 10 && item->GetVnum() == pkAttacker->missions_bp[i].vnum){pkAttacker->DoMission(i, 1);}
+				}
+			}
+#endif
 
 			pos.x = number(-7, 7) * 20;
 			pos.y = number(-7, 7) * 20;
@@ -1693,6 +1712,15 @@ void CHARACTER::Dead(LPCHARACTER pkKiller, bool bImmediateDead)
 		else
 		{
 			sys_log(1, "DEAD_BY_PC: %s %p KILLER %s %p", GetName(), this, pkKiller->GetName(), get_pointer(pkKiller));
+#ifdef __BATTLE_PASS__
+			if (!pkKiller->v_counts.empty())
+			{
+				for (int i=0; i<pkKiller->missions_bp.size(); ++i)
+				{
+					if (pkKiller->missions_bp[i].type == 12){pkKiller->DoMission(i, 1);}
+				}	
+			}
+#endif
 			REMOVE_BIT(m_pointsInstant.instant_flag, INSTANT_FLAG_DEATH_PENALTY);
 
 			if (GetEmpire() != pkKiller->GetEmpire())
@@ -2008,6 +2036,26 @@ void CHARACTER::Dead(LPCHARACTER pkKiller, bool bImmediateDead)
 			sys_err("DragonLair: Dragon killed by nobody");
 		}
 	}
+
+
+#ifdef __BATTLE_PASS__
+	if (pkKiller && GetRaceNum() > 100)
+	{
+		if (!pkKiller->v_counts.empty())
+		{
+			for (int i=0; i<pkKiller->missions_bp.size(); ++i)
+			{
+				if (GetRaceNum() == pkKiller->missions_bp[i].vnum && pkKiller->missions_bp[i].type == 2)
+				{
+					pkKiller->DoMission(i, 1);
+				}
+			}
+		
+		}
+	}
+#endif
+
+
 	#ifdef __KINGDOMS_WAR__
 	if (GetMapIndex() == KingdomsWar::MAP_INDEX)
 	{
@@ -2826,6 +2874,19 @@ bool CHARACTER::Damage(LPCHARACTER pAttacker, int dam, EDamageType type) // retu
 	float damMul = this->GetDamMul();
 	float tempDam = dam;
 	dam = tempDam * damMul + 0.5f;
+
+#ifdef __BATTLE_PASS__
+	if (!pAttacker->v_counts.empty() && pAttacker->IsPC())
+	{
+		for (int i=0; i<pAttacker->missions_bp.size(); ++i)
+		{
+			if (pAttacker->missions_bp[i].type == 7 && !this->IsPC()){	pAttacker->DoMission(i, dam);}
+			if (pAttacker->missions_bp[i].type == 8 && this->IsPC()){	pAttacker->DoMission(i, dam);}
+			if (pAttacker->missions_bp[i].type == 11 && this->IsPC() && dam >= pAttacker->missions_bp[i].count){	pAttacker->DoMission(i, dam);}
+		}
+	}
+#endif
+
 
 #ifdef WJ_SHOW_STROKE_INFO
 	if (pAttacker)

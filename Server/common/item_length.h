@@ -200,6 +200,15 @@ enum EFishSubTypes
 	FISH_DEAD,
 };
 
+
+#ifdef __BATTLE_PASS__
+enum EBattlePassItem
+{
+	ITEM_BATTLE_PASS = 50027, // ItemVnum
+};
+#endif
+
+
 enum EResourceSubTypes
 {
 	RESOURCE_FISHBONE,

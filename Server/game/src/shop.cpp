@@ -576,6 +576,18 @@ int CShop::Buy(LPCHARACTER ch, BYTE pos, bool isSearchBuy /*= false*/)
 			ch->PointChange(POINT_GOLD, -llPriceYang, false);
 		else
 			ch->PointChange(POINT_GOLD, -dwPrice, false);
+#ifdef __BATTLE_PASS__
+			if (!m_pkPC)
+			{
+				if (!ch->v_counts.empty())
+				{
+					for (int i=0; i<ch->missions_bp.size(); ++i)
+					{
+						if (ch->missions_bp[i].type == 3){	ch->DoMission(i, dwPrice);}
+					}
+				}
+			}
+#endif
 	}
 	else if (dwWItemVnum > 0)
 	{
@@ -584,6 +596,18 @@ int CShop::Buy(LPCHARACTER ch, BYTE pos, bool isSearchBuy /*= false*/)
 	}
 #else
 	ch->PointChange(POINT_GOLD, -dwPrice, false);
+#ifdef __BATTLE_PASS__
+	if (!m_pkPC)
+	{
+		if (!ch->v_counts.empty())
+		{
+			for (int i=0; i<ch->missions_bp.size(); ++i)
+			{
+				if (ch->missions_bp[i].type == 3){	ch->DoMission(i, dwPrice);}
+			}
+		}
+	}
+#endif
 #endif
 	// ch->PointChange(POINT_GOLD, -dwPrice, false);
 // #endif

@@ -39,6 +39,11 @@ ACMD(do_slow);
 ACMD(do_stun);
 // END_OF_ADD_COMMAND_SLOW_STUN
 
+#ifdef __BATTLE_PASS__
+ACMD(final_reward_battlepass);
+ACMD(open_battlepass);
+#endif
+
 ACMD(do_warp);
 ACMD(do_goto);
 ACMD(do_item);
@@ -448,6 +453,11 @@ struct command_info cmd_info[] =
 	{ "state",		do_state,		0,			POS_DEAD,	GM_LOW_WIZARD	},
 	{ "stun",		do_stun,		0,			POS_DEAD,	GM_LOW_WIZARD	},
 	{ "slow",		do_slow,		0,			POS_DEAD,	GM_LOW_WIZARD	},
+
+#ifdef __BATTLE_PASS__
+	{ "open_battlepass",		open_battlepass,		0,			POS_DEAD,	GM_PLAYER	},
+	{ "final_reward_battlepass",		final_reward_battlepass,		0,			POS_DEAD,	GM_PLAYER	},
+#endif
 
 	{ "respawn",	do_respawn,		0,			POS_DEAD,	GM_IMPLEMENTOR	},
 

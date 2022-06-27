@@ -4,6 +4,7 @@
 
 //#define METIN2_LAMDA_100PVP						// Server 100% PvP Config
 
+#define __BATTLE_PASS__								// BattlePass (Free Version)
 
 /*** YMIR Default Macros ***/
 #define ENABLE_GAME_MASTER_FULL_SET					//GM /Full Set Komutu
